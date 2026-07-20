@@ -1,0 +1,28 @@
+Terminal 1 - gateway server:
+
+  $ python3 server/gateway_server.py --port 5050
+  [server] listening on 0.0.0.0:5050
+  [server] HELLO from 'pi-sensor-01' (127.0.0.1)
+  [server] auth OK for 'pi-sensor-01'
+  [server] reading from 'pi-sensor-01': temp=24.7
+
+Terminal 2 - device (the compiled C client, standing in for the Pi):
+
+  $ ./device_client 127.0.0.1 5050 pi-sensor-01 f3a1c9b2e7d4a05f6c8b1e2d3f4a5b6c
+  [device] connected to 127.0.0.1:5050 as 'pi-sensor-01'
+  [device] <- CHALLENGE 8546684b725505c190c2b1e32174a87a 1784535309
+  [device] <- AUTH_OK 499154ce7584693f
+  [device] authenticated, session token: 499154ce7584693f
+  [device] <- DATA_OK
+
+Same device, wrong secret key:
+
+  $ ./device_client 127.0.0.1 5050 pi-sensor-01 00000000000000000000000000000000
+  [device] connected to 127.0.0.1:5050 as 'pi-sensor-01'
+  [device] <- CHALLENGE 3650d44d73413c2b4d6b8f916d595842 1784535314
+  [device] <- AUTH_FAIL bad_hmac
+  [device] authentication failed, closing connection
+
+tools/attack_sim.py output is not reproduced here since it's several
+screens long - run it directly, it's self-contained and takes about a
+second.
